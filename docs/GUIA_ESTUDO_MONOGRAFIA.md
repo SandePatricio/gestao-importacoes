@@ -507,7 +507,7 @@ Passos resumidos (detalhe em [`LEIA-ME_ENTREGA.md`](../LEIA-ME_ENTREGA.md)):
 # 1. Base de dados (MySQL a correr, ex.: XAMPP)
 mysql -u root < docs/dump_gestao_importacoes_20260704.sql
 
-# 2. Backend
+# 2. Backend  —  macOS / Linux
 cd backend
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
@@ -519,6 +519,17 @@ cd frontend
 npm install
 npm run dev                                    # web em http://localhost:5173
 ```
+
+> **No Windows** a pasta da venv é `.venv\Scripts\` (barra invertida), não
+> `.venv/bin/`. O passo 2 fica:
+> ```bat
+> cd backend
+> python -m venv .venv
+> .venv\Scripts\pip install -r requirements.txt
+> copy .env.example .env
+> .venv\Scripts\uvicorn app.main:app --reload
+> ```
+> Os passos 1 (mysql) e 3 (npm) são iguais nos dois sistemas.
 
 Login inicial: `admin@conneximportacoes.co.mz` / `admin123`.
 

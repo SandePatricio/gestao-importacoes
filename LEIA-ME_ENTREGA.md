@@ -49,6 +49,8 @@ mysql -u root -e "CREATE DATABASE IF NOT EXISTS gestao_importacoes CHARACTER SET
 ```
 
 ### 2. Backend (API)
+
+**macOS / Linux:**
 ```sh
 cd backend
 python3 -m venv .venv
@@ -57,6 +59,20 @@ cp .env.example .env        # depois preencher as chaves (ver secção Configura
 .venv/bin/python seed.py    # (só na Opção B) cria tabelas + administrador inicial
 .venv/bin/uvicorn app.main:app --reload
 ```
+
+**Windows (PowerShell ou CMD):** no Windows a pasta da venv é `.venv\Scripts\`
+(barra invertida) em vez de `.venv/bin/`:
+```bat
+cd backend
+python -m venv .venv
+.venv\Scripts\pip install -r requirements.txt
+copy .env.example .env       :: depois preencher as chaves (ver secção Configuração)
+.venv\Scripts\python seed.py :: (só na Opção B) cria tabelas + administrador inicial
+.venv\Scripts\uvicorn app.main:app --reload
+```
+> Em alternativa, no Windows pode **activar** a venv uma vez com
+> `.venv\Scripts\activate` e depois usar `pip`, `python` e `uvicorn` sem o prefixo.
+
 API disponível em http://localhost:8000 · Documentação: http://localhost:8000/docs
 
 **Login inicial:** `admin@conneximportacoes.co.mz` / `admin123`

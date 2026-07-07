@@ -24,15 +24,19 @@ docs/       Requisitos e diagramas UML da monografia
 3. **Criar tabelas e administrador inicial:**
    ```sh
    cd backend
-   .venv/bin/python seed.py
+   .venv/bin/python seed.py            # Windows: .venv\Scripts\python seed.py
    # Login inicial: admin@conneximportacoes.co.mz / admin123
    ```
 
 4. **Arrancar a API:**
    ```sh
-   .venv/bin/uvicorn app.main:app --reload
+   .venv/bin/uvicorn app.main:app --reload      # Windows: .venv\Scripts\uvicorn app.main:app --reload
    ```
    Documentação interactiva (Swagger): http://localhost:8000/docs
+
+> **Nota Windows:** a pasta da venv chama-se `.venv\Scripts\` (barra invertida)
+> em vez de `.venv/bin/`. Em alternativa, activa a venv uma vez com
+> `.venv\Scripts\activate` e usa `python`/`uvicorn` sem o prefixo.
 
 ## Arranque do frontend
 
