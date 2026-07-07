@@ -43,9 +43,12 @@ def listar_pedidos(
     estado: EstadoPedido | None = None,
     tipo: TipoPedido | None = None,
     cliente_id: int | None = None,
+    incluir_inactivos: bool = False,
     db: Session = Depends(get_db),
 ):
     query = db.query(Pedido)
+    if not incluir_inactivos:
+        query = query.filter(Pedido.activo.is_(True))
     if estado:
         query = query.filter(Pedido.estado == estado)
     if tipo:
@@ -80,6 +83,28 @@ def criar_pedido(
 @router.get("/{pedido_id}", response_model=PedidoDetalheOut)
 def obter_pedido(pedido_id: int, db: Session = Depends(get_db)):
     return _obter_pedido(db, pedido_id)
+
+
+@router.delete("/{pedido_id}", response_model=PedidoDetalheOut)
+def inactivar_pedido(pedido_id: int, db: Session = Depends(get_db)):
+    """Apaga (inactiva) o pedido: passa a estar oculto nas listagens sem perder
+    o histórico. É reversível através de `reactivar`.
+    """
+    pedido = _obter_pedido(db, pedido_id)
+    pedido.activo = False
+    db.commit()
+    db.refresh(pedido)
+    return pedido
+
+
+@router.post("/{pedido_id}/reactivar", response_model=PedidoDetalheOut)
+def reactivar_pedido(pedido_id: int, db: Session = Depends(get_db)):
+    """Repõe um pedido previamente inactivado."""
+    pedido = _obter_pedido(db, pedido_id)
+    pedido.activo = True
+    db.commit()
+    db.refresh(pedido)
+    return pedido
 
 
 @router.put("/{pedido_id}/cotacao", response_model=PedidoDetalheOut)

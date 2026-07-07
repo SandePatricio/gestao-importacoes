@@ -95,6 +95,21 @@ export default function PedidoDetalhe() {
     await accao(() => api.post(`/api/pedidos/${id}/estado`, { estado }));
   }
 
+  async function apagarPedido() {
+    if (!confirm("Apagar (inactivar) este pedido? Deixa de aparecer na lista, mas o histórico é preservado e pode ser reposto.")) return;
+    setErro("");
+    try {
+      await api.del(`/api/pedidos/${id}`);
+      navigate("/pedidos");
+    } catch (e) {
+      setErro(e.message);
+    }
+  }
+
+  async function reactivarPedido() {
+    await accao(() => api.post(`/api/pedidos/${id}/reactivar`));
+  }
+
   async function receberMedir(e) {
     e.preventDefault();
     setErro("");
@@ -332,6 +347,27 @@ export default function PedidoDetalhe() {
                 className="w-full rounded-xl bg-neutral-100 text-neutral-700 px-4 py-2 text-xs font-semibold hover:bg-neutral-200 transition mt-3"
               >
                 Cancelar pedido
+              </button>
+            )}
+
+            {pedido.activo === false ? (
+              <div className="mt-3 space-y-2">
+                <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-xl px-3 py-2">
+                  Pedido apagado (inactivo) — não aparece na lista de pedidos.
+                </p>
+                <button
+                  onClick={reactivarPedido}
+                  className="w-full rounded-xl bg-neutral-100 text-neutral-700 px-4 py-2 text-xs font-semibold hover:bg-neutral-200 transition"
+                >
+                  Repor pedido
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={apagarPedido}
+                className="w-full rounded-xl bg-red-50 text-red-700 px-4 py-2 text-xs font-semibold hover:bg-red-100 transition mt-2"
+              >
+                Apagar pedido (inactivar)
               </button>
             )}
           </div>

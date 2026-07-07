@@ -135,7 +135,12 @@ def minhas_facturas(
     transporte = (
         db.query(Factura).join(Encomenda).filter(Encomenda.cliente_id == cliente.id).all()
     )
-    produto = db.query(Factura).join(Pedido).filter(Pedido.cliente_id == cliente.id).all()
+    produto = (
+        db.query(Factura)
+        .join(Pedido)
+        .filter(Pedido.cliente_id == cliente.id, Pedido.activo.is_(True))
+        .all()
+    )
     todas = {f.id: f for f in (*transporte, *produto)}.values()
     return sorted(todas, key=lambda f: f.data_emissao, reverse=True)
 
@@ -161,7 +166,7 @@ def minha_factura(
 
 def _pedido_do_cliente(db: Session, pedido_id: int, cliente: Cliente) -> Pedido:
     pedido = db.get(Pedido, pedido_id)
-    if not pedido or pedido.cliente_id != cliente.id:
+    if not pedido or pedido.cliente_id != cliente.id or not pedido.activo:
         raise HTTPException(status_code=404, detail="Pedido não encontrado")
     return pedido
 
@@ -193,7 +198,7 @@ def meus_pedidos(
 ):
     return (
         db.query(Pedido)
-        .filter(Pedido.cliente_id == cliente.id)
+        .filter(Pedido.cliente_id == cliente.id, Pedido.activo.is_(True))
         .order_by(Pedido.criado_em.desc())
         .all()
     )

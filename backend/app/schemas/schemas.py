@@ -421,6 +421,7 @@ class PedidoOut(BaseModel):
     tipo: TipoPedido
     estado: EstadoPedido
     origem: str
+    activo: bool = True
     cliente: ClienteOut
     estimativa_transporte_mzn: float | None = None
     total_pagar_agora_mzn: float | None = None

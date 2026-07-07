@@ -65,6 +65,9 @@ class Pedido(Base):
     estado: Mapped[EstadoPedido] = mapped_column(Enum(EstadoPedido), index=True)
     origem: Mapped[str] = mapped_column(String(20), default="OPERADOR")  # OPERADOR | PORTAL
     criado_por_id: Mapped[int | None] = mapped_column(ForeignKey("utilizadores.id"), nullable=True)
+    # Soft-delete: pedido inactivado deixa de aparecer nas listagens, mas o
+    # histórico (facturas, encomenda, notificações) é preservado.
+    activo: Mapped[bool] = mapped_column(Boolean, default=True, server_default="1", index=True)
 
     # Cotação (valores em MZN, introduzidos pelo operador após o procurement).
     # O preço do produto já vem convertido para MZN; sem câmbio nem regra de comissão.
