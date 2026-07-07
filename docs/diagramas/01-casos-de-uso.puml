@@ -1,0 +1,49 @@
+@startuml
+' Diagrama de Casos de Uso — renderizar em https://www.plantuml.com/plantuml ou extensão PlantUML
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Cliente" as cliente
+actor "Operador" as operador
+actor "Administrador" as admin
+actor "API de Tracking\n(17TRACK)" as apiExterna <<sistema externo>>
+actor "Relógio\n(Job 30 min)" as relogio <<sistema>>
+
+admin --|> operador
+
+rectangle "Sistema de Gestão de Encomendas Aéreas" {
+  usecase "Consultar encomenda\npor código de rastreio" as UC1
+  usecase "Autenticar-se no portal\n(telefone + senha)" as UC13
+  usecase "Consultar as minhas\nencomendas e facturas" as UC14
+  usecase "Autenticar-se" as UC2
+  usecase "Gerir clientes" as UC3
+  usecase "Registar encomenda" as UC4
+  usecase "Actualizar estado\nda encomenda" as UC5
+  usecase "Emitir factura" as UC6
+  usecase "Registar pagamento" as UC7
+  usecase "Consultar dashboard" as UC8
+  usecase "Gerir utilizadores" as UC9
+  usecase "Sincronizar tracking\ncom API externa" as UC10
+  usecase "Notificar cliente" as UC11
+  usecase "Registar evento\nde tracking" as UC12
+}
+
+cliente --> UC1
+cliente --> UC13
+cliente --> UC14
+UC14 ..> UC13 : <<include>>
+operador --> UC2
+operador --> UC3
+operador --> UC4
+operador --> UC5
+operador --> UC6
+operador --> UC7
+operador --> UC8
+admin --> UC9
+
+relogio --> UC10
+UC10 --> apiExterna
+UC5 ..> UC12 : <<include>>
+UC5 ..> UC11 : <<include>>
+UC10 ..> UC5 : <<extend>>
+@enduml
