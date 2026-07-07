@@ -1,0 +1,47 @@
+# ==== Backend (Python / FastAPI) ====
+backend/.venv/
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Segredos e configuração local
+.env
+backend/.env
+*.local
+
+# Uploads e dados gerados em runtime
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# ==== Frontend (React / Vite / Node) ====
+node_modules/
+frontend/node_modules/
+frontend/dist/
+dist/
+build/
+.vite/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ==== Base de dados ====
+*.sqlite3
+*.db
+
+# ==== Sistema operativo / Editores ====
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+*.swp
+*~
