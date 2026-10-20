@@ -134,3 +134,17 @@ def marcar_como_paga(factura_id: int, db: Session = Depends(get_db)):
 
     db.refresh(factura)
     return factura
+
+
+@router.post("/{factura_id}/cancelar", response_model=FacturaOut)
+def cancelar_factura(factura_id: int, db: Session = Depends(get_db)):
+    """Anula uma factura pendente (ex.: valor errado), permitindo emitir outra."""
+    factura = db.get(Factura, factura_id)
+    if not factura:
+        raise HTTPException(status_code=404, detail="Factura não encontrada")
+    if factura.estado != EstadoFactura.PENDENTE:
+        raise HTTPException(status_code=409, detail="Só é possível cancelar facturas pendentes")
+    factura.estado = EstadoFactura.CANCELADA
+    db.commit()
+    db.refresh(factura)
+    return factura

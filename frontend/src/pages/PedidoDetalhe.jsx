@@ -84,7 +84,14 @@ export default function PedidoDetalhe() {
   }
 
   async function emitirFacturaProduto() {
-    await accao(() => api.post(`/api/pedidos/${id}/factura-produto`, { valor_total: null }));
+    setErro("");
+    try {
+      const factura = await api.post(`/api/pedidos/${id}/factura-produto`, { valor_total: null });
+      // Abre logo o documento emitido (para imprimir / enviar ao cliente)
+      navigate(`/facturas/${factura.id}`);
+    } catch (e) {
+      setErro(e.message);
+    }
   }
 
   async function pagarFactura(facturaId) {

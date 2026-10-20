@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { api } from "../services/api";
 import Anexos from "../components/Anexos";
 import { ESTADOS, rotuloEstado, corEstado, formatarData } from "../services/estados";
@@ -76,6 +76,7 @@ function Percurso({ estadoActual }) {
 
 export default function EncomendaDetalhe() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [encomenda, setEncomenda] = useState(null);
   const [novoEstado, setNovoEstado] = useState("");
   const [localizacao, setLocalizacao] = useState("");
@@ -109,14 +110,13 @@ export default function EncomendaDetalhe() {
     e.preventDefault();
     setErro("");
     try {
-      await api.post("/api/facturas", {
+      const factura = await api.post("/api/facturas", {
         encomenda_id: Number(id),
         // Vazio → o backend usa o frete calculado da encomenda
         valor_total: valorFactura === "" ? null : Number(valorFactura),
       });
-      setValorFactura("");
-      setOutroValor(false);
-      carregar();
+      // Abre logo o documento emitido (para imprimir / enviar ao cliente)
+      navigate(`/facturas/${factura.id}`);
     } catch (erro) {
       setErro(erro.message);
     }

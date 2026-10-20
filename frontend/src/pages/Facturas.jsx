@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { api } from "../services/api";
 import { formatarData } from "../services/estados";
 
@@ -10,6 +10,7 @@ const CORES_FACTURA = {
 };
 
 export default function Facturas() {
+  const navigate = useNavigate();
   const [facturas, setFacturas] = useState([]);
   const [encomendas, setEncomendas] = useState([]);
   const [form, setForm] = useState({ encomenda_id: "", valor_total: "" });
@@ -25,6 +26,14 @@ export default function Facturas() {
     api.get("/api/encomendas").then(setEncomendas).catch(() => {});
   }, []);
 
+  // Só se pode facturar o transporte de encomendas sem factura activa (não cancelada)
+  const jaFacturadas = new Set(
+    facturas
+      .filter((f) => f.tipo === "TRANSPORTE" && f.estado !== "CANCELADA")
+      .map((f) => f.encomenda_id)
+  );
+  const facturaveis = encomendas.filter((enc) => !jaFacturadas.has(enc.id));
+
   // Encomenda seleccionada (para mostrar o frete calculado e pré-preencher o valor)
   const encSel = encomendas.find((x) => x.id === Number(form.encomenda_id));
 
@@ -32,13 +41,23 @@ export default function Facturas() {
     e.preventDefault();
     setErro("");
     try {
-      await api.post("/api/facturas", {
+      const factura = await api.post("/api/facturas", {
         encomenda_id: Number(form.encomenda_id),
         // Vazio → o backend usa o frete calculado da encomenda
         valor_total: form.valor_total === "" ? null : Number(form.valor_total),
       });
-      setForm({ encomenda_id: "", valor_total: "" });
-      setMostrarForm(false);
+      // Abre logo o documento emitido (para imprimir / enviar ao cliente)
+      navigate(`/facturas/${factura.id}`);
+    } catch (erro) {
+      setErro(erro.message);
+    }
+  }
+
+  async function cancelar(id) {
+    if (!confirm("Cancelar esta factura? Deixa de contar como valor a receber.")) return;
+    setErro("");
+    try {
+      await api.post(`/api/facturas/${id}/cancelar`);
       carregar();
     } catch (erro) {
       setErro(erro.message);
@@ -83,8 +102,10 @@ export default function Facturas() {
               }}
               className="w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-400"
             >
-              <option value="">Seleccionar encomenda…</option>
-              {encomendas.map((enc) => (
+              <option value="">
+                {facturaveis.length ? "Seleccionar encomenda…" : "Todas as encomendas já têm factura"}
+              </option>
+              {facturaveis.map((enc) => (
                 <option key={enc.id} value={enc.id}>
                   {enc.codigo_rastreio} — {enc.cliente.nome} — {enc.descricao}
                 </option>
@@ -108,6 +129,7 @@ export default function Facturas() {
               Emitir
             </button>
           </div>
+          {erro && <p className="md:col-span-3 text-red-600 text-sm">{erro}</p>}
           {form.encomenda_id && (
             <p className="md:col-span-3 text-xs text-neutral-500 -mt-1">
               {encSel?.valor_frete
@@ -118,7 +140,7 @@ export default function Facturas() {
         </form>
       )}
 
-      {erro && <p className="text-red-600 text-sm mb-4">{erro}</p>}
+      {erro && !mostrarForm && <p className="text-red-600 text-sm mb-4">{erro}</p>}
 
       <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
         <table className="w-full text-sm">
@@ -126,7 +148,7 @@ export default function Facturas() {
             <tr>
               <th className="px-4 py-3 font-medium">Número</th>
               <th className="px-4 py-3 font-medium">Cliente</th>
-              <th className="px-4 py-3 font-medium">Encomenda</th>
+              <th className="px-4 py-3 font-medium">Referência</th>
               <th className="px-4 py-3 font-medium">Valor (MZN)</th>
               <th className="px-4 py-3 font-medium">Estado</th>
               <th className="px-4 py-3 font-medium">Emitida em</th>
@@ -150,7 +172,10 @@ export default function Facturas() {
                   </Link>
                 </td>
                 <td className="px-4 py-3">
-                  <Link to={`/encomendas/${f.encomenda_id}`} className="font-mono text-blue-600 hover:underline">
+                  <Link
+                    to={f.encomenda_id ? `/encomendas/${f.encomenda_id}` : `/pedidos/${f.pedido_id}`}
+                    className="font-mono text-blue-600 hover:underline"
+                  >
                     {f.codigo_rastreio}
                   </Link>
                 </td>
@@ -161,14 +186,22 @@ export default function Facturas() {
                   </span>
                 </td>
                 <td className="px-4 py-3 text-neutral-500">{formatarData(f.data_emissao)}</td>
-                <td className="px-4 py-3 text-right">
+                <td className="px-4 py-3 text-right whitespace-nowrap space-x-3">
                   {f.estado === "PENDENTE" && (
-                    <button
-                      onClick={() => marcarPaga(f.id)}
-                      className="text-xs font-semibold text-green-700 hover:underline"
-                    >
-                      Marcar como paga
-                    </button>
+                    <>
+                      <button
+                        onClick={() => marcarPaga(f.id)}
+                        className="text-xs font-semibold text-green-700 hover:underline"
+                      >
+                        Marcar como paga
+                      </button>
+                      <button
+                        onClick={() => cancelar(f.id)}
+                        className="text-xs font-semibold text-neutral-500 hover:underline"
+                      >
+                        Cancelar
+                      </button>
+                    </>
                   )}
                 </td>
               </tr>

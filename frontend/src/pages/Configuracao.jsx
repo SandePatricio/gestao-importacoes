@@ -27,6 +27,11 @@ export default function Configuracao() {
     daf: "",
     declarante_nome: "",
     declarante_cargo: "",
+    banco_nome: "",
+    banco_titular: "",
+    banco_conta: "",
+    banco_nib: "",
+    pagamento_movel: "",
   });
   const [logs, setLogs] = useState([]);
   const [erro, setErro] = useState("");
@@ -48,6 +53,11 @@ export default function Configuracao() {
         daf: c.daf,
         declarante_nome: c.declarante_nome,
         declarante_cargo: c.declarante_cargo,
+        banco_nome: c.banco_nome ?? "",
+        banco_titular: c.banco_titular ?? "",
+        banco_conta: c.banco_conta ?? "",
+        banco_nib: c.banco_nib ?? "",
+        pagamento_movel: c.pagamento_movel ?? "",
       })
     ).catch((e) => setErro(e.message));
     api.get("/api/configuracao/frete/logs").then(setLogs).catch(() => {});
@@ -74,6 +84,11 @@ export default function Configuracao() {
         daf: form.daf,
         declarante_nome: form.declarante_nome,
         declarante_cargo: form.declarante_cargo,
+        banco_nome: form.banco_nome,
+        banco_titular: form.banco_titular,
+        banco_conta: form.banco_conta,
+        banco_nib: form.banco_nib,
+        pagamento_movel: form.pagamento_movel,
       });
       setSucesso("Parâmetros actualizados com sucesso.");
       carregar();
@@ -204,6 +219,31 @@ export default function Configuracao() {
                 pattern={pattern}
                 maxLength={maxLength}
                 title={title}
+                value={form[campo]}
+                onChange={(e) => setForm({ ...form, [campo]: e.target.value })}
+                className="w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-400"
+              />
+            </div>
+          ))}
+        </div>
+
+        <h3 className="font-semibold text-neutral-900 mt-6 mb-1">Dados bancários para pagamento</h3>
+        <p className="text-xs text-neutral-500 mb-4">
+          Aparecem no rodapé de todas as facturas, para o cliente saber para onde transferir.
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[
+            { campo: "banco_nome", rotulo: "Banco", placeholder: "Ex.: Millennium BIM" },
+            { campo: "banco_titular", rotulo: "Titular da conta" },
+            { campo: "banco_conta", rotulo: "N.º de conta", inputMode: "numeric" },
+            { campo: "banco_nib", rotulo: "NIB", inputMode: "numeric" },
+            { campo: "pagamento_movel", rotulo: "Pagamento móvel (opcional)", placeholder: "Ex.: M-Pesa 84 123 4567", span: "md:col-span-2" },
+          ].map(({ campo, rotulo, span, inputMode, placeholder }) => (
+            <div key={campo} className={span}>
+              <label className="block text-sm font-medium text-neutral-700 mb-1">{rotulo}</label>
+              <input
+                inputMode={inputMode}
+                placeholder={placeholder}
                 value={form[campo]}
                 onChange={(e) => setForm({ ...form, [campo]: e.target.value })}
                 className="w-full rounded-xl border border-neutral-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-400"

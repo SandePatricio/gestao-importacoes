@@ -80,8 +80,8 @@ export default function Layout() {
   }
 
   return (
-    <div className="min-h-screen flex bg-[#ececec]">
-      <aside className="w-64 shrink-0 flex flex-col px-4 py-6">
+    <div className="min-h-screen flex bg-[#ececec] print:block print:min-h-0 print:bg-white">
+      <aside className="w-64 shrink-0 flex flex-col px-4 py-6 print:hidden">
         <div className="flex items-center gap-3 px-2 mb-8">
           <div className="h-10 w-10 rounded-2xl bg-neutral-900 text-white flex items-center justify-center font-bold text-lg">
             C
@@ -173,7 +173,7 @@ export default function Layout() {
         </div>
       </aside>
 
-      <main className="flex-1 px-10 py-8 overflow-auto">
+      <main className="flex-1 px-10 py-8 overflow-auto print:p-0 print:overflow-visible">
         <Outlet />
       </main>
     </div>

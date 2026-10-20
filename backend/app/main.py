@@ -10,12 +10,13 @@ from app.routers import (
     auth, clientes, encomendas, tracking_publico, facturas, dashboard,
     portal, configuracao, fiscal, pedidos, anexos, ferramentas,
 )
-from app.services.config_service import obter_configuracao
+from app.services.config_service import obter_configuracao, migrar_colunas
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     Base.metadata.create_all(bind=engine)
+    migrar_colunas(engine)
     storage.garantir_pasta()
     # Garante a linha de configuração do frete e espelha-a em settings
     db = SessionLocal()

@@ -199,7 +199,7 @@ export default function ClienteDetalhe() {
           <thead className="text-neutral-400 text-left">
             <tr>
               <th className="px-4 py-3 font-medium">Número</th>
-              <th className="px-4 py-3 font-medium">Encomenda</th>
+              <th className="px-4 py-3 font-medium">Referência</th>
               <th className="px-4 py-3 font-medium">Valor</th>
               <th className="px-4 py-3 font-medium">Estado</th>
               <th className="px-4 py-3 font-medium">Emitida em</th>
@@ -216,7 +216,15 @@ export default function ClienteDetalhe() {
                     {f.numero}
                   </Link>
                 </td>
-                <td className="px-4 py-3 font-mono text-neutral-600">{f.codigo_rastreio}</td>
+                <td className="px-4 py-3">
+                  <Link
+                    to={f.encomenda_id ? `/encomendas/${f.encomenda_id}` : `/pedidos/${f.pedido_id}`}
+                    className="font-mono text-blue-600 hover:underline"
+                  >
+                    {f.codigo_rastreio}
+                  </Link>
+                  <span className="ml-2 text-xs text-neutral-400">{f.tipo === "PRODUTO" ? "Produto" : "Transporte"}</span>
+                </td>
                 <td className="px-4 py-3">{mzn(f.valor_total)}</td>
                 <td className="px-4 py-3">
                   <span className={`text-xs font-medium px-2.5 py-1 rounded-md ${CORES_FACTURA[f.estado]}`}>

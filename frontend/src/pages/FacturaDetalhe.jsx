@@ -15,6 +15,17 @@ export default function FacturaDetalhe() {
     api.get("/api/configuracao/frete").then(setEmpresa).catch(() => {});
   }, [id]);
 
+  async function cancelar() {
+    if (!confirm("Cancelar esta factura? Depois pode emitir uma nova.")) return;
+    setErro("");
+    try {
+      await api.post(`/api/facturas/${id}/cancelar`);
+      setFactura(await api.get(`/api/facturas/${id}`));
+    } catch (erro) {
+      setErro(erro.message);
+    }
+  }
+
   async function marcarPaga() {
     setErro("");
     try {
@@ -34,6 +45,14 @@ export default function FacturaDetalhe() {
       <div className="flex items-center justify-between mb-6 print:hidden">
         <Link to="/facturas" className="text-sm text-blue-600 hover:underline">← Voltar às facturas</Link>
         <div className="space-x-3">
+          {factura.estado === "PENDENTE" && (
+            <button
+              onClick={cancelar}
+              className="rounded-xl bg-neutral-100 text-neutral-700 px-4 py-2 text-sm font-semibold hover:bg-neutral-200 transition active:scale-[0.98]"
+            >
+              Cancelar factura
+            </button>
+          )}
           {factura.estado === "PENDENTE" && (
             <button
               onClick={marcarPaga}

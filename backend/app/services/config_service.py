@@ -5,6 +5,7 @@ objecto `settings` em runtime, para que o cálculo do frete e do ISPC leiam de u
 sítio. Cada alteração fica registada em `logs_configuracao_frete` (quem, quando e a
 descrição "campo: antes → depois").
 """
+from sqlalchemy import inspect, text
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
@@ -18,6 +19,27 @@ def _sincronizar_settings(cfg: ConfiguracaoFrete) -> None:
     settings.ISPC_PERCENTAGEM = float(cfg.ispc_percentagem)
     settings.ISPC_QUOTA_ANUAL = float(cfg.ispc_quota_anual)
     settings.ISPC_PRIMEIRO_ANO = bool(cfg.ispc_primeiro_ano)
+
+
+# Colunas acrescentadas depois da criação da tabela. O create_all não altera
+# tabelas existentes, por isso são adicionadas no arranque se faltarem.
+_COLUNAS_NOVAS = {
+    "banco_nome": "VARCHAR(120) NOT NULL DEFAULT ''",
+    "banco_titular": "VARCHAR(160) NOT NULL DEFAULT ''",
+    "banco_conta": "VARCHAR(40) NOT NULL DEFAULT ''",
+    "banco_nib": "VARCHAR(40) NOT NULL DEFAULT ''",
+    "pagamento_movel": "VARCHAR(120) NOT NULL DEFAULT ''",
+}
+
+
+def migrar_colunas(engine) -> None:
+    """Adiciona à `configuracao_frete` as colunas novas que ainda não existam."""
+    tabela = ConfiguracaoFrete.__tablename__
+    existentes = {c["name"] for c in inspect(engine).get_columns(tabela)}
+    with engine.begin() as conn:
+        for nome, ddl in _COLUNAS_NOVAS.items():
+            if nome not in existentes:
+                conn.execute(text(f"ALTER TABLE {tabela} ADD COLUMN {nome} {ddl}"))
 
 
 def obter_configuracao(db: Session) -> ConfiguracaoFrete:
@@ -75,6 +97,11 @@ _CAMPOS = [
     ("daf", "DAF", str),
     ("declarante_nome", "Declarante", str),
     ("declarante_cargo", "Cargo do declarante", str),
+    ("banco_nome", "Banco", str),
+    ("banco_titular", "Titular da conta", str),
+    ("banco_conta", "N.º de conta", str),
+    ("banco_nib", "NIB", str),
+    ("pagamento_movel", "Pagamento móvel", str),
 ]
 
 

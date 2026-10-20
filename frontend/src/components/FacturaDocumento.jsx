@@ -12,9 +12,17 @@ export default function FacturaDocumento({ factura, empresa }) {
   const pedido = factura.pedido;
   const cliente = enc?.cliente ?? pedido?.cliente;
   const ehProduto = factura.tipo === "PRODUTO";
+  // Dados de pagamento configurados (só as linhas preenchidas)
+  const pagamento = [
+    ["Banco", empresa?.banco_nome],
+    ["Titular", empresa?.banco_titular],
+    ["N.º de conta", empresa?.banco_conta],
+    ["NIB", empresa?.banco_nib],
+    ["Pagamento móvel", empresa?.pagamento_movel],
+  ].filter(([, valor]) => valor);
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm print:border-0 print:rounded-none p-8 relative overflow-hidden">
+    <div className="bg-white rounded-2xl shadow-sm print:shadow-none print:border-0 print:rounded-none p-8 relative overflow-hidden">
       {factura.estado === "PAGA" && (
         <div className="absolute top-10 right-[-40px] rotate-45 bg-green-600 text-white text-xs font-bold tracking-widest px-12 py-1.5">
           PAGA
@@ -149,6 +157,23 @@ export default function FacturaDocumento({ factura, empresa }) {
           ) : (
             <p className="text-neutral-600">Valor definido manualmente (sem cálculo automático por peso).</p>
           )}
+        </div>
+      )}
+
+      {pagamento.length > 0 && factura.estado !== "CANCELADA" && (
+        <div className="border border-neutral-300 rounded-xl px-4 py-3 mb-8 text-sm break-inside-avoid">
+          <p className="text-xs uppercase tracking-wider text-neutral-400 mb-2">Dados para pagamento</p>
+          <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-1">
+            {pagamento.map(([rotulo, valor]) => (
+              <div key={rotulo} className="contents">
+                <dt className="text-neutral-500">{rotulo}</dt>
+                <dd className="font-mono font-medium text-neutral-900">{valor}</dd>
+              </div>
+            ))}
+          </dl>
+          <p className="text-xs text-neutral-400 mt-2">
+            Indique o n.º da factura ({factura.numero}) na referência da transferência e envie o comprovativo.
+          </p>
         </div>
       )}
 

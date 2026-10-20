@@ -44,13 +44,18 @@ def scraping_link_portal(url: str, cliente: Cliente = Depends(get_cliente_actual
 
 @router.get("/empresa")
 def identidade_empresa(db: Session = Depends(get_db)):
-    """Identidade da empresa para cabeçalho de documentos (cotação) no portal."""
+    """Identidade e dados de pagamento da empresa para os documentos do portal."""
     cfg = obter_configuracao(db)
     return {
         "empresa_nome": cfg.empresa_nome,
         "empresa_nuit": cfg.empresa_nuit,
         "empresa_endereco": cfg.empresa_endereco,
         "empresa_telefone": cfg.empresa_telefone,
+        "banco_nome": cfg.banco_nome,
+        "banco_titular": cfg.banco_titular,
+        "banco_conta": cfg.banco_conta,
+        "banco_nib": cfg.banco_nib,
+        "pagamento_movel": cfg.pagamento_movel,
     }
 
 

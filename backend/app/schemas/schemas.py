@@ -467,6 +467,11 @@ class ConfiguracaoFreteOut(BaseModel):
     daf: str
     declarante_nome: str
     declarante_cargo: str
+    banco_nome: str = ""
+    banco_titular: str = ""
+    banco_conta: str = ""
+    banco_nib: str = ""
+    pagamento_movel: str = ""
     actualizado_em: datetime | None = None
 
 
@@ -485,6 +490,12 @@ class ConfiguracaoFreteUpdate(BaseModel):
     daf: str = Field(default="", max_length=120, description="Direcção da Área Fiscal")
     declarante_nome: str = Field(default="", max_length=120)
     declarante_cargo: str = Field(default="", max_length=120)
+    # Dados de pagamento (impressos nas facturas)
+    banco_nome: str = Field(default="", max_length=120)
+    banco_titular: str = Field(default="", max_length=160)
+    banco_conta: str = Field(default="", max_length=40)
+    banco_nib: str = Field(default="", max_length=40)
+    pagamento_movel: str = Field(default="", max_length=120, description="Ex.: M-Pesa 84 123 4567")
 
 
 class LogConfiguracaoFreteOut(BaseModel):

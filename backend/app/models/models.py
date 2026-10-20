@@ -285,6 +285,12 @@ class ConfiguracaoFrete(Base):
     daf: Mapped[str] = mapped_column(String(120), default="")  # Direcção da Área Fiscal
     declarante_nome: Mapped[str] = mapped_column(String(120), default="")
     declarante_cargo: Mapped[str] = mapped_column(String(120), default="")
+    # Dados de pagamento impressos nas facturas
+    banco_nome: Mapped[str] = mapped_column(String(120), default="", server_default="")
+    banco_titular: Mapped[str] = mapped_column(String(160), default="", server_default="")
+    banco_conta: Mapped[str] = mapped_column(String(40), default="", server_default="")
+    banco_nib: Mapped[str] = mapped_column(String(40), default="", server_default="")
+    pagamento_movel: Mapped[str] = mapped_column(String(120), default="", server_default="")  # M-Pesa / e-Mola
     actualizado_em: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())
 
 

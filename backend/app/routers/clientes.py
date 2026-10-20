@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.core.deps import get_utilizador_actual
 from app.core.security import hash_password
-from app.models.models import Cliente, Encomenda, Factura
+from app.models.models import Cliente, Encomenda, Factura, Pedido
 from app.models.enums import EstadoEncomenda, EstadoFactura
 from app.schemas.schemas import (
     ClienteCreate,
@@ -63,10 +63,12 @@ def detalhe_cliente(cliente_id: int, db: Session = Depends(get_db)):
         .order_by(Encomenda.data_registo.desc())
         .all()
     )
+    # Facturas de transporte (via encomenda) e de produto (via pedido)
     facturas = (
         db.query(Factura)
-        .join(Encomenda)
-        .filter(Encomenda.cliente_id == cliente_id)
+        .outerjoin(Encomenda, Factura.encomenda_id == Encomenda.id)
+        .outerjoin(Pedido, Factura.pedido_id == Pedido.id)
+        .filter(or_(Encomenda.cliente_id == cliente_id, Pedido.cliente_id == cliente_id))
         .order_by(Factura.data_emissao.desc())
         .all()
     )
@@ -92,11 +94,13 @@ def detalhe_cliente(cliente_id: int, db: Session = Depends(get_db)):
             FacturaResumoOut(
                 id=f.id,
                 numero=f.numero,
+                tipo=f.tipo,
                 valor_total=float(f.valor_total),
                 estado=f.estado,
                 data_emissao=f.data_emissao,
                 encomenda_id=f.encomenda_id,
-                codigo_rastreio=f.encomenda.codigo_rastreio,
+                pedido_id=f.pedido_id,
+                codigo_rastreio=f.encomenda.codigo_rastreio if f.encomenda else f.pedido.codigo,
                 cliente_id=cliente.id,
                 cliente_nome=cliente.nome,
             )
