@@ -23,9 +23,7 @@ const MEDICAO_VAZIA = {
   comprimento_cm: "",
   largura_cm: "",
   altura_cm: "",
-  awb: "",
   tracking_externo: "",
-  transportadora: "",
   previsao_chegada: "",
 };
 
@@ -126,9 +124,7 @@ export default function PedidoDetalhe() {
         comprimento_cm: numOuNulo(medicao.comprimento_cm),
         largura_cm: numOuNulo(medicao.largura_cm),
         altura_cm: numOuNulo(medicao.altura_cm),
-        awb: medicao.awb || null,
         tracking_externo: medicao.tracking_externo || null,
-        transportadora: medicao.transportadora || null,
         previsao_chegada: medicao.previsao_chegada || null,
       });
       navigate(`/encomendas/${enc.id}`);
@@ -327,8 +323,6 @@ export default function PedidoDetalhe() {
                   {campo(medicao, setMedicao, "comprimento_cm", "Comprimento (cm)")}
                   {campo(medicao, setMedicao, "largura_cm", "Largura (cm)")}
                   {campo(medicao, setMedicao, "altura_cm", "Altura (cm)")}
-                  {campo(medicao, setMedicao, "transportadora", "Transportadora", "text")}
-                  {campo(medicao, setMedicao, "awb", "AWB", "text")}
                 </div>
                 <button type="submit" className="w-full rounded-xl bg-green-600 text-white px-4 py-2 text-sm font-semibold hover:bg-green-500 transition active:scale-[0.98]">
                   Receber, medir e criar encomenda

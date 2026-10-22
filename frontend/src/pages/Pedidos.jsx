@@ -8,7 +8,6 @@ const FORM_VAZIO = {
   cliente_id: "",
   tipo: "COM_COMPRA",
   tracking_externo: "",
-  transportadora: "",
   previsao_chegada_china: "",
   itens: [{ ...ITEM_VAZIO }],
 };
@@ -67,7 +66,6 @@ export default function Pedidos() {
         cliente_id: Number(form.cliente_id),
         tipo: form.tipo,
         tracking_externo: form.tracking_externo || null,
-        transportadora: form.transportadora || null,
         previsao_chegada_china: form.previsao_chegada_china || null,
         itens: form.itens
           .filter((it) => it.descricao.trim())
@@ -141,9 +139,8 @@ export default function Pedidos() {
           </div>
 
           {form.tipo === "ENVIO_DIRECTO" && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {[
-                ["transportadora", "Transportadora", "text"],
                 ["tracking_externo", "Nº de rastreio (envio do cliente)", "text"],
                 ["previsao_chegada_china", "Previsão de chegada à China", "date"],
               ].map(([campo, rotulo, tipo]) => (

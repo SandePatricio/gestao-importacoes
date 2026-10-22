@@ -11,7 +11,6 @@ const FORM_VAZIO = {
   largura_cm: "",
   altura_cm: "",
   tracking_externo: "",
-  transportadora: "",
   previsao_chegada: "",
 };
 
@@ -68,7 +67,6 @@ export default function Encomendas() {
         largura_cm: form.largura_cm ? Number(form.largura_cm) : null,
         altura_cm: form.altura_cm ? Number(form.altura_cm) : null,
         tracking_externo: form.tracking_externo || null,
-        transportadora: form.transportadora || null,
         previsao_chegada: form.previsao_chegada || null,
       });
       setForm(FORM_VAZIO);
@@ -130,8 +128,7 @@ export default function Encomendas() {
             ["comprimento_cm", "Comprimento (cm)", "number"],
             ["largura_cm", "Largura (cm)", "number"],
             ["altura_cm", "Altura (cm)", "number"],
-            ["transportadora", "Transportadora", "text"],
-            ["tracking_externo", "Nº tracking externo (AWB)", "text"],
+            ["tracking_externo", "Nº tracking externo", "text"],
           ].map(([campo, rotulo, tipo]) => (
             <div key={campo}>
               <label className="block text-sm font-medium text-neutral-700 mb-1">{rotulo}</label>

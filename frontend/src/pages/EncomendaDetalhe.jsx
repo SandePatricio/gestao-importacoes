@@ -176,7 +176,6 @@ export default function EncomendaDetalhe() {
                 ["Peso cobrável", encomenda.peso_cobravel_kg ? `${encomenda.peso_cobravel_kg} kg` : "—"],
                 ["Valor do frete", encomenda.valor_frete ? mzn(encomenda.valor_frete) : "—"],
                 ["Rota", `${encomenda.origem} → ${encomenda.destino}`],
-                ["Transportadora", encomenda.transportadora ?? "—"],
                 ["Tracking externo", encomenda.tracking_externo ?? "—"],
                 ["Previsão de chegada", encomenda.previsao_chegada ?? "—"],
                 ["Registada em", formatarData(encomenda.data_registo)],

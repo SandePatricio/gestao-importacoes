@@ -68,7 +68,6 @@ export default function FacturaDocumento({ factura, empresa }) {
             <>
               <p className="font-mono font-semibold text-neutral-900">{enc.codigo_rastreio}</p>
               <p className="text-sm text-neutral-600">{enc.origem} → {enc.destino}</p>
-              {enc.transportadora && <p className="text-sm text-neutral-600">Transportadora: {enc.transportadora}</p>}
             </>
           ) : (
             <>
